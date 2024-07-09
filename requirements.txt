@@ -1,0 +1,12 @@
+google-cloud-vision
+fastapi
+python-dotenv
+fastapi-jwt-auth
+passlib
+pydantic
+"pydantic<2"
+bcrypt
+bcrypt==3.2.0 passlib==1.7.4
+google-cloud google-auth fastapi uvicorn python-multipart passlib bcrypt
+uvicorn
+gunicorn
