@@ -5,7 +5,5 @@ fastapi-jwt-auth
 passlib
 pydantic
 bcrypt
-
-
 uvicorn
 gunicorn
