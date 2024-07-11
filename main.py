@@ -20,7 +20,6 @@ app = FastAPI()
 # Include the auth router
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
-
 # Configure CORS
 origins = [
     "http://localhost.tiangolo.com",
@@ -37,7 +36,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/detect-features", response_model=Dict[str, Any], responses={200: {"description": "Success"}, 400: {"description": "Bad Request"}, 500: {"description": "Internal Server Error"}})
+@app.post("/detect-features", response_model=Dict[str, Any], responses={200: {"description": "Success"}, 400: {"description": "Bad Request"}, 406: {"description": "Not Acceptable"}, 500: {"description": "Internal Server Error"}})
 async def detect_features_endpoint(file: UploadFile = File(...), Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     
@@ -57,7 +56,7 @@ async def detect_features_endpoint(file: UploadFile = File(...), Authorize: Auth
 
         logging.debug(f"File saved at: {file_location}")
 
-        # Detect features using the function from vs.py
+        # Detect features using the function from GCvision.py
         detection_results = detect_features(file_location)
 
         logging.debug(f"Detection results: {detection_results}")
@@ -79,6 +78,15 @@ async def detect_features_endpoint(file: UploadFile = File(...), Authorize: Auth
                 "vehicle_exterior": "Vehicle Exterior Image",
                 "color": detection_results["color"]
             }
+        else:
+            # Return 406 Not Acceptable if neither speedometer nor vehicle exterior is detected
+            return JSONResponse(status_code=406, content={
+                "Status": 406,
+                "information": {
+                    "message": "Not Acceptable: The uploaded image is neither a speedometer nor a vehicle exterior.",
+                    "file_name": file.filename
+                }
+            })
 
         return JSONResponse(status_code=200, content=response_content)
     except Exception as e:
