@@ -2,8 +2,6 @@ from google.cloud import vision
 import logging
 import os
 
-
-
 # Set Google Cloud credentials environment variable
 service_account_path = r"C:\Users\Oracle DB\Desktop\MS_ocr\zeta-ascent-425607-d8-93027003e046.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = service_account_path
