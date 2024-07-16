@@ -1,13 +1,14 @@
 import logging
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse
 from fastapi_jwt_auth import AuthJWT
 from fastapi.middleware.cors import CORSMiddleware
-from auth import router as auth_router
-from GCvision import detect_features
+from auth import router as auth_router  # Make sure auth.py is in the same directory
+from GCvision import detect_features  # Make sure GCvision.py is in the same directory
 from dotenv import load_dotenv
 from typing import Dict, Any
 from fastapi.openapi.utils import get_openapi
+import os
 
 # Load environment variables
 load_dotenv()
@@ -22,10 +23,11 @@ app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
 # Configure CORS
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
     "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:8000",
+    "http://192.168.1.8",
+    "http://192.168.1.8:8000",
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
@@ -98,7 +100,6 @@ async def detect_features_endpoint(file: UploadFile = File(...), Authorize: Auth
                 "file_name": file.filename if 'file' in locals() else None
             }
         })
-
 # Custom OpenAPI schema function to include OAuth2 security
 def custom_openapi():
     if app.openapi_schema:
@@ -129,4 +130,4 @@ app.openapi = custom_openapi
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug", reload=True)
