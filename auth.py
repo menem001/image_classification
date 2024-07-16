@@ -16,9 +16,8 @@ fake_users_db = {
         "username": "mspl",
         "full_name": "mspl",
         "email": "mspl@gmail.com",
-        "hashed_password": pwd_context.hash("mspl123"),
+        "hashed_password": pwd_context.hash("mspl"),
         "disabled": False,
-
     }
 }
 
@@ -56,6 +55,10 @@ def authenticate_user(fake_db, username: str, password: str):
         return False
     return user
 
+@router.get("/test-get")
+async def test_get():
+    return {"message": "hello world"}
+
 @router.post('/login')
 def login(form_data: OAuth2PasswordRequestForm = Depends(), Authorize: AuthJWT = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -67,6 +70,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), Authorize: AuthJWT =
 
     access_token = Authorize.create_access_token(subject=user.username)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+
 
 #@router.get('/me', response_model=User)
 #def read_users_me(Authorize: AuthJWT = Depends()):
